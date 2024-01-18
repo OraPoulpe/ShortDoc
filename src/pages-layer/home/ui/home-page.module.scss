@@ -1,0 +1,26 @@
+.wrapHomePage {
+  max-width: 705px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 77px;
+
+  .homeSection {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 35px;
+
+    .firtTitle {
+      max-width: 530px;
+      line-height: normal;
+    }
+    .secondTitle {
+      max-width: 100%;
+      line-height: 30px;
+    }
+
+    
+  }
+}
