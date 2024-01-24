@@ -5,7 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 
 const FileButton: FC = () => {
   return (
-    <ConfigProvider theme={lodedFileTheme}>
+    <ConfigProvider theme={fileButtonTheme}>
       <Button
         type="primary"
         size="large"
@@ -20,12 +20,14 @@ const FileButton: FC = () => {
   )
 }
 
-const lodedFileTheme: ThemeConfig = {
+const fileButtonTheme: ThemeConfig = {
     components: {
       Button: {
         colorPrimary: PALETTE["primary-blue"],
         colorText: PALETTE["white"],
-        controlHeightLG: 48,
+        controlHeightLG: 80,
+        fontSizeLG: 22,
+        borderRadiusLG: 20,
       },
     },
   }

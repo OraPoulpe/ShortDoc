@@ -79,9 +79,17 @@ export const UploadFileField: FC = () => {
 
   if (!file) {
     return (
-      <Dragger {...UploadFileInputProps} className={styles.wrapDragger}>
-        {pageWidth.width < 576 ? <FileButton/> : <FileField />}
-      </Dragger>
+      <>
+        {pageWidth.width < 576 ? (
+          <Upload {...UploadFileInputProps} className={styles.wrapUpload}>
+            <FileButton />
+          </Upload>
+        ) : (
+          <Dragger {...UploadFileInputProps} className={styles.wrapDragger}>
+            <FileField />
+          </Dragger>
+        )}
+      </>
     )
   } else {
     return (
