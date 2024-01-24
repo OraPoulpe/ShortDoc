@@ -1,6 +1,14 @@
-.MainLayout{
-    display:flex;
-    justify-content: center;
-    width: 100%;
-    height: calc(100% - 121px);
+@import "src/shared/styles/mixins";
+
+.MainLayout {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: calc(100% - 120px);
+  padding: 40px 16px 40px 16px;
+//   box-sizing: border-box;
+  
+  @include media("max", "md") {
+      height: calc(100vh - 80px);
+  }
 }

@@ -1,7 +1,11 @@
-.wrapPreview{
-    width:100%;
-    height: 100%;
-    border-radius: 15px;
-    border: 1.5px solid #dbe1e6;
+.wrapPreview {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  border: 1.5px solid #dbe1e6;
+  display: flex;
 
+  .wrapText {
+    width: 50%;
+  }
 }

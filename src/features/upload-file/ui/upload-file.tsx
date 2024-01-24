@@ -2,7 +2,7 @@
 
 import React, { ChangeEvent, FC, useState } from "react"
 import type { ThemeConfig, UploadFile, UploadProps } from "antd"
-import { Button, ConfigProvider, message, Upload } from "antd"
+import { Button, ConfigProvider, Flex, message, Spin, Upload } from "antd"
 import { Text } from "@/shared/ui/text"
 
 import Image from "next/image"
@@ -11,6 +11,10 @@ import DeleteIcon from "../../../../public/icons/delete-icon.svg"
 
 import styles from "./upload-file.module.scss"
 import { PALETTE } from "@/shared/lib/constants"
+import { useUploadFileMutation } from "@/shared/api/fileApi"
+import { generateFileId } from "@/shared/utils/generateFileId"
+import { IFileData } from "@/shared/interfaces/fileData"
+import { useRouter } from "next/navigation"
 
 const { Dragger } = Upload
 
@@ -20,55 +24,59 @@ export const UploadFileField: FC = () => {
   const [uploading, setUploading] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleUpload = () => {
-    //отправка документов на сервер
-    // const formData = new FormData()
-    // file.forEach((file) => {
-    //   formData.append("files[]", file as FileType)
-    // })
-    // setUploading(true)
-    // // You can use any AJAX library you like
-    // fetch("https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((res) => res.json())
-    //   .then(() => {
-    //     setFileList([])
-    //     message.success("upload successfully.")
-    //   })
-    //   .catch(() => {
-    //     message.error("upload failed.")
-    //   })
-    //   .finally(() => {
-    //     setUploading(false)
-    //   })
+  const router = useRouter()
+
+  const [uploadFile] = useUploadFileMutation()
+
+  const handleUploadFile = async () => {
+    console.log("file before upload", file)
+    const fileId = generateFileId()
+    const fileData: IFileData = {
+      file: file,
+      id: fileId,
+    }
+    //   const res = await uploadFile(fileData)
+    router.push(`/result/${fileId}`)
+
+    console.log()
   }
 
   const UploadFileInputProps: UploadProps = {
     maxCount: 1,
-    accept:
-      ".docx",
+    accept: ".docx",
     multiple: false,
-    onRemove: (file) => {
-      // const index = file.indexOf(file)
-      // const newFileList = file.slice()
-      // newFileList.splice(index, 1)
-      // setFile(newFileList)
+    onChange(info) {
+      // if (info.file.type != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      //   message.warning(`${info.file.name} формат должен быть docx.`);
+
+      // }
+      const { status } = info.file
+      console.log("info", status)
+      if (status !== "uploading") {
+        console.log("uploading", info.file, info.fileList)
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} документ загружен успешно.`)
+      } else if (status === "error") {
+        message.error(`${info.file.name} не удалось загрузить документ.`)
+      }
     },
     beforeUpload: (file) => {
       setFile(file)
-      console.log(file)
+      // console.log(file)
       setIsLoaded(true)
 
       return false
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files)
     },
   }
 
   if (!file) {
     return (
       <Dragger {...UploadFileInputProps} className={styles.wrapDragger}>
-        <div className={styles.wrapContent}>
+        <Flex justify="center" gap={50}>
           <Image
             src={UploadIcon.src}
             alt="Загрузка документа"
@@ -89,37 +97,8 @@ export const UploadFileField: FC = () => {
               Мы поддерживаем .docx
             </Text>
           </div>
-        </div>
+        </Flex>
       </Dragger>
-
-      // <label className={styles.wrapDragger}>
-      //   <input
-      //     type="file"
-      //     className={styles.inputFile}
-      //     value={file}
-      //     onChange={handleChangeUploadFile  }
-      //   />
-      //   <Image
-      //     src={UploadIcon.src}
-      //     alt="Загрузка документа"
-      //     width={80}
-      //     height={80}
-      //   />
-      //   <div className={styles.wrapContent}>
-      //     <Text level={"h3"} weight={500} size={24} text_align="center">
-      //       Выберите или перетащите файл
-      //     </Text>
-      //     <Text
-      //       level={"h3"}
-      //       weight={500}
-      //       size={16}
-      //       text_align="center"
-      //       color={PALETTE["text-gray"]}
-      //     >
-      //       Мы поддерживаем .docx
-      //     </Text>
-      //   </div>
-      // </label>
     )
   } else {
     return (
@@ -144,6 +123,7 @@ export const UploadFileField: FC = () => {
             size="large"
             style={{ width: "100%" }}
             loading={isLoading}
+            onClick={handleUploadFile}
           >
             Упростить
           </Button>

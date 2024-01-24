@@ -16,7 +16,7 @@ export interface ITextProps {
 
 export interface ITextStyle {
     size: number;
-    weight?: number | string;
+    fontWeight?: number | string;
     color?: string;
-    text_align?: string;
+    text?: TTextAlign;
 }

@@ -4,7 +4,7 @@ import { ConfigProvider, ThemeConfig } from "antd"
 import { PALETTE } from "@/shared/lib/constants"
 import { Header } from "@/widgets/header"
 
-export const MainLayout = ({ children }: { children: React.ReactNode }) => {
+const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <ConfigProvider theme={mainTheme}>
       <header>
@@ -21,3 +21,5 @@ const mainTheme: ThemeConfig = {
     colorPrimary: PALETTE["primary-blue"],
   },
 }
+
+export default MainLayout

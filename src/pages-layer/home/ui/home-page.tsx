@@ -23,6 +23,7 @@ export const HomePage = () => {
             weight={700}
             size={52}
             color={PALETTE["primary-blue"]}
+            className={styles.firtTitle}
           >
             Упростить
           </Text>{" "}
@@ -40,8 +41,7 @@ export const HomePage = () => {
         </Text>
       </section>
 
-      <UploadFileField/>
-   
+      <UploadFileField />
     </div>
   )
 }

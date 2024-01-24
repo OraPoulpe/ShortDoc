@@ -1,17 +1,18 @@
+import { fileApi } from '@/shared/api/fileApi';
 import {
     combineReducers,
     configureStore,
   } from '@reduxjs/toolkit';
   
   const reducers = combineReducers({
-    // [userApi.reducerPath]: userApi.reducer,
+    [fileApi.reducerPath]: fileApi.reducer,
   });
   
   export const store = configureStore({
     reducer: reducers,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
-        // .concat(loginApi.middleware),
+        .concat(fileApi.middleware),
   });
   
   // export type RootState = ReturnType<typeof store.getState>;

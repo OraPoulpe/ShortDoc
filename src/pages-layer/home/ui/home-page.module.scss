@@ -1,3 +1,6 @@
+@import "src/shared/styles/mixins";
+  
+
 .wrapHomePage {
   max-width: 705px;
   display: flex;
@@ -15,10 +18,16 @@
     .firtTitle {
       max-width: 530px;
       line-height: normal;
+
+      @include media("max", "md") {
+        font-size: 40px;
+      }
     }
+
     .secondTitle {
       max-width: 100%;
       line-height: 30px;
+
     }
 
     
