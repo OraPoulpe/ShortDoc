@@ -6,8 +6,6 @@ import { Button, ConfigProvider, Flex, message, Spin, Upload } from "antd"
 import { Text } from "@/shared/ui/text"
 
 import Image from "next/image"
-import UploadIcon from "../../../../public/icons/upload-file-icon.svg"
-import DeleteIcon from "../../../../public/icons/delete-icon.svg"
 
 import styles from "./upload-file.module.scss"
 import { PALETTE } from "@/shared/lib/constants"
@@ -15,6 +13,10 @@ import { useUploadFileMutation } from "@/shared/api/fileApi"
 import { generateFileId } from "@/shared/utils/generateFileId"
 import { IFileData } from "@/shared/interfaces/fileData"
 import { useRouter } from "next/navigation"
+import { useWindowSize } from "@/shared/hooks/useWindowsSize"
+import { FileField } from "@/entities/file-field"
+import { PreviewLoadedFile } from "@/entities/preview-loaded-file"
+import FileButton from "@/entities/file-button/ui/file-button"
 
 const { Dragger } = Upload
 
@@ -28,6 +30,8 @@ export const UploadFileField: FC = () => {
 
   const [uploadFile] = useUploadFileMutation()
 
+  const pageWidth = useWindowSize()
+
   const handleUploadFile = async () => {
     console.log("file before upload", file)
     const fileId = generateFileId()
@@ -35,7 +39,7 @@ export const UploadFileField: FC = () => {
       file: file,
       id: fileId,
     }
-    //   const res = await uploadFile(fileData)
+    // const res = await uploadFile(fileData)
     router.push(`/result/${fileId}`)
 
     console.log()
@@ -76,58 +80,22 @@ export const UploadFileField: FC = () => {
   if (!file) {
     return (
       <Dragger {...UploadFileInputProps} className={styles.wrapDragger}>
-        <Flex justify="center" gap={50}>
-          <Image
-            src={UploadIcon.src}
-            alt="Загрузка документа"
-            width={80}
-            height={80}
-          />
-          <div>
-            <Text level={"h3"} weight={500} size={24} text_align="center">
-              Выберите или перетащите файл
-            </Text>
-            <Text
-              level={"h3"}
-              weight={500}
-              size={16}
-              text_align="center"
-              color={PALETTE["text-gray"]}
-            >
-              Мы поддерживаем .docx
-            </Text>
-          </div>
-        </Flex>
+        {pageWidth.width < 576 ? <FileButton/> : <FileField />}
       </Dragger>
     )
   } else {
     return (
       <ConfigProvider theme={lodedFileTheme}>
-        <section className={styles.wrapLoadedSection}>
-          <div className={styles.wrapFileName}>
-            <Text level={"h3"} weight={600} size={16}>
-              {file?.name}
-            </Text>
-            <Image
-              onClick={() => {
-                setFile(undefined)
-              }}
-              src={DeleteIcon.src}
-              alt="Удалить документ"
-              width={24}
-              height={24}
-            />
-          </div>
-          <Button
-            type="primary"
-            size="large"
-            style={{ width: "100%" }}
-            loading={isLoading}
-            onClick={handleUploadFile}
-          >
-            Упростить
-          </Button>
-        </section>
+        <PreviewLoadedFile file={file} onRemove={() => setFile(undefined)} />
+        <Button
+          type="primary"
+          size="large"
+          style={{ width: "100%" }}
+          loading={isLoading}
+          onClick={handleUploadFile}
+        >
+          Упростить
+        </Button>
       </ConfigProvider>
     )
   }

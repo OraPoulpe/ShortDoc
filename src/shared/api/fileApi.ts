@@ -5,7 +5,7 @@ import { IFileData } from "../interfaces/fileData";
 export const fileApi = createApi({
   reducerPath: "file",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://inverse-projects.store/api",
+    baseUrl: "http://89.111.153.5:8000/InputFile/",
   }),
 
   tagTypes: ["fileData"],

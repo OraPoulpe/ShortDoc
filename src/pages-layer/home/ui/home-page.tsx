@@ -3,7 +3,7 @@ import { Button, Typography } from "antd"
 import styles from "./home-page.module.scss"
 import { Text } from "@/shared/ui/text"
 import { PALETTE } from "@/shared/lib/constants"
-import { UploadFileField } from "@/features/upload-file"
+import { UploadFileField } from "@/widgets/upload-file"
 const { Title } = Typography
 
 //TODO: изменить тег выделения слова другим цветом
