@@ -1,0 +1,1 @@
+export { default as PieceText } from './ui/piece-text'

@@ -4,12 +4,13 @@ import React, { ChangeEvent, FC, useState } from "react"
 import type { ThemeConfig, UploadFile, UploadProps } from "antd"
 import { Button, ConfigProvider, Flex, message, Spin, Upload } from "antd"
 import { Text } from "@/shared/ui/text"
+import "./upload-file.css"
 
 import Image from "next/image"
 
 import styles from "./upload-file.module.scss"
 import { PALETTE } from "@/shared/lib/constants"
-import { useUploadFileMutation } from "@/shared/api/fileApi"
+import { useGetResultQuery, useUploadFileMutation } from "@/shared/api/fileApi"
 import { generateFileId } from "@/shared/utils/generateFileId"
 import { IFileData } from "@/shared/interfaces/fileData"
 import { useRouter } from "next/navigation"
@@ -32,6 +33,10 @@ export const UploadFileField: FC = () => {
 
   const pageWidth = useWindowSize()
 
+  const { data } = useGetResultQuery();
+
+  console.log(data)
+
   const handleUploadFile = async () => {
     console.log("file before upload", file)
     const fileId = generateFileId()
@@ -39,7 +44,7 @@ export const UploadFileField: FC = () => {
       file: file,
       id: fileId,
     }
-    // const res = await uploadFile(fileData)
+    const res = await uploadFile(fileData)
     router.push(`/result/${fileId}`)
 
     console.log()
@@ -81,7 +86,7 @@ export const UploadFileField: FC = () => {
     return (
       <>
         {pageWidth.width < 576 ? (
-          <Upload {...UploadFileInputProps} className={styles.wrapUpload}>
+          <Upload {...UploadFileInputProps} className={"wrapUpload"}>
             <FileButton />
           </Upload>
         ) : (
