@@ -13,9 +13,23 @@ import {
   TableProps,
   ThemeConfig,
 } from "antd"
+import { getFromLocalStorage } from "@/shared/utils/getFromLocalStorage"
 
 export const PreviewResult: FC = () => {
-  const [data, setData] = useState<ITableData[]>(makeDataTable)
+  const [data, setData] = useState<ITableData[]>([])
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const preparedDataForTable = await getFromLocalStorage("origin")
+        setData(makeDataTable(preparedDataForTable))
+      } catch (error) {
+        console.error("Ошибка при загрузке данных из localStorage:", error)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const updateObjectInList = (index: number, updatedObject: ITableData) => {
     const newData: ITableData[] = [...data]
@@ -25,23 +39,17 @@ export const PreviewResult: FC = () => {
     setData(newData)
   }
 
-  const updatedObject = { key: "1", orig: "Новый текст", res: "Новое значение" }
-
-  useEffect(() => {
-    updateObjectInList(1, updatedObject)
-  }, [])
-
   const columns = [
     {
       title: "Оригинал",
-      dataIndex: "orig",
-      key: "orig",
+      dataIndex: "origin",
+      key: "origin",
       width: "50%",
     },
     {
       title: "Результат",
-      dataIndex: "res",
-      key: "res",
+      dataIndex: "result",
+      key: "result",
       width: "50%",
     },
   ]

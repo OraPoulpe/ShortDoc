@@ -1,5 +1,5 @@
 export interface ITableData {
     key: string,
-    orig: string,
-    res: string
+    origin: string,
+    result: string
 }

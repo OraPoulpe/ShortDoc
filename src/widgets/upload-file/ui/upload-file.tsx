@@ -6,11 +6,17 @@ import { Button, ConfigProvider, Flex, message, Spin, Upload } from "antd"
 import { Text } from "@/shared/ui/text"
 import "./upload-file.css"
 
+import mammoth from "mammoth"
+
 import Image from "next/image"
 
 import styles from "./upload-file.module.scss"
 import { PALETTE } from "@/shared/lib/constants"
-import { useGetResultQuery, useUploadFileMutation } from "@/shared/api/fileApi"
+import {
+  fileApi,
+  useGetResultQuery,
+  useUploadFileMutation,
+} from "@/shared/api/fileApi"
 import { generateFileId } from "@/shared/utils/generateFileId"
 import { IFileData } from "@/shared/interfaces/fileData"
 import { useRouter } from "next/navigation"
@@ -33,85 +39,154 @@ export const UploadFileField: FC = () => {
 
   const pageWidth = useWindowSize()
 
-  const { data } = useGetResultQuery();
+  // const { data } = useGetResultQuery()
 
-  console.log(data)
+  // console.log(data)
 
-  const handleUploadFile = async () => {
-    console.log("file before upload", file)
+  const handleUploadFile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData()
     const fileId = generateFileId()
-    const fileData: IFileData = {
-      file: file,
-      id: fileId,
-    }
-    const res = await uploadFile(fileData)
-    router.push(`/result/${fileId}`)
 
-    console.log()
+    // console.log("file before upload", file)
+
+    formData.append("id", fileId)
+
+    if (file instanceof File) {
+      formData.append("file", file, file.name)
+    }
+
+    // const fileData: IFileData = {
+    //   file: file,
+    //   id: "45454",
+    // }
+    // try {
+    //   const res = await uploadFile(formData)
+    //   console.log("res", res)
+
+    //   if ("data" in res) {
+    //     console.log("data", res.data.text[12])
+    //   }
+
+    //   invalidateQueries("uploadFile")
+    // } catch (error) {}
+
+    // headers: { "Content-Type": "multipart/form-data" },
+    // const response = await fetch("https://short-doc.ru/InputFile/", {
+    //   method: "POST",
+    //   body: formData,
+
+    // })
+
+    router.push(`/result/${fileId}`)
   }
 
   const UploadFileInputProps: UploadProps = {
+    name: "file",
     maxCount: 1,
     accept: ".docx",
     multiple: false,
+    headers: {
+      authorization: "authorization-text",
+    },
     onChange(info) {
-      // if (info.file.type != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      //   message.warning(`${info.file.name} формат должен быть docx.`);
-
-      // }
-      const { status } = info.file
-      console.log("info", status)
-      if (status !== "uploading") {
-        console.log("uploading", info.file, info.fileList)
+      console.log("onChange", info)
+      if (info.file.status !== "uploading") {
+        console.log(info.file, info.fileList)
       }
-      if (status === "done") {
-        message.success(`${info.file.name} документ загружен успешно.`)
-      } else if (status === "error") {
-        message.error(`${info.file.name} не удалось загрузить документ.`)
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} file uploaded successfully`)
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} file upload failed.`)
       }
     },
-    beforeUpload: (file) => {
+
+    progress: {
+      strokeColor: {
+        "0%": "#108ee9",
+        "100%": "#87d068",
+      },
+      strokeWidth: 3,
+      format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+    },
+    beforeUpload: async (file) => {
       setFile(file)
-      // console.log(file)
       setIsLoaded(true)
 
+      message.success(`${file.name} файл добавлен успешно`)
+
+      const reader = new FileReader()
+      reader.onload = async () => {
+        const arrayBuffer = reader.result as ArrayBuffer
+        const result = await mammoth.extractRawText({ arrayBuffer })
+        const origin: string[] = result.value
+          .split("\n")
+          .filter((line) => line.trim() !== "")
+        localStorage.setItem("origin", JSON.stringify(origin))
+      }
+      reader.readAsArrayBuffer(file)
       return false
     },
+
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files)
     },
   }
 
-  if (!file) {
-    return (
-      <>
-        {pageWidth.width < 576 ? (
-          <Upload {...UploadFileInputProps} className={"wrapUpload"}>
-            <FileButton />
-          </Upload>
-        ) : (
-          <Dragger {...UploadFileInputProps} className={styles.wrapDragger}>
-            <FileField />
-          </Dragger>
-        )}
-      </>
-    )
-  } else {
-    return (
-      <ConfigProvider theme={lodedFileTheme}>
-        <PreviewLoadedFile file={file} onRemove={() => setFile(undefined)} />
-        <Button
-          type="primary"
-          size="large"
-          style={{ width: "100%" }}
-          loading={isLoading}
-          onClick={handleUploadFile}
-        >
-          Упростить
-        </Button>
-      </ConfigProvider>
-    )
-  }
+  const [test, setTest] = useState<File | null>()
+
+  return (
+    <form
+      onSubmit={handleUploadFile}
+      style={{ width: "100%", height: "180px" }}
+    >
+      {!file && (
+        <>
+          {pageWidth.width < 576 ? (
+            <>
+              <Upload {...UploadFileInputProps} className={"wrapUpload"}>
+                <FileButton />
+              </Upload>
+              <Text
+                level={"h3"}
+                weight={500}
+                size={16}
+                text_align="center"
+                color={PALETTE["text-gray"]}
+              >
+                Мы поддерживаем .docx
+              </Text>
+            </>
+          ) : (
+            <Dragger {...UploadFileInputProps} className={styles.wrapDragger}>
+              <FileField />
+            </Dragger>
+          )}
+        </>
+      )}
+
+      {file && (
+        <>
+          <ConfigProvider theme={lodedFileTheme}>
+            <PreviewLoadedFile
+              file={file}
+              onRemove={() => setFile(undefined)}
+            />
+            <Button
+              type="primary"
+              size="large"
+              style={{ width: "100%" }}
+              loading={isLoading}
+              htmlType="submit"
+            >
+              Упростить
+            </Button>
+          </ConfigProvider>
+        </>
+      )}
+    </form>
+  )
 }
 
 const lodedFileTheme: ThemeConfig = {
@@ -122,4 +197,7 @@ const lodedFileTheme: ThemeConfig = {
       controlHeightLG: 48,
     },
   },
+}
+function invalidateQueries(arg0: string) {
+  throw new Error("Function not implemented.")
 }

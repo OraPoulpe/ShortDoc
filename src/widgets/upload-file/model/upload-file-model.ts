@@ -1,6 +1,10 @@
-import { useUploadFileMutation } from "@/shared/api/fileApi"
-import { UploadFile } from "antd"
 
 export const UploadFileModel = () => {
- 
+  const removeEmptyLines = (lines: string[]): string[] => {
+    return lines.filter((line) => line.trim() !== "")
+  }
+
+  return {
+    removeEmptyLines
+  }
 }

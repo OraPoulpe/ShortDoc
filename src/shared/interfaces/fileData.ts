@@ -1,6 +1,10 @@
-import { UploadFile } from "antd";
+import { UploadFile } from "antd"
 
 export interface IFileData {
-    file: UploadFile | undefined, 
-    id: string
+  file: UploadFile
+  id: string
+}
+
+export interface IResponse {
+  text: string[]
 }

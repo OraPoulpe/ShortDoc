@@ -1,23 +1,25 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { UploadFile } from "antd"
-import { IFileData } from "../interfaces/fileData"
+import { IFileData, IResponse } from "../interfaces/fileData"
 
 export const fileApi = createApi({
   reducerPath: "file",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://89.111.153.5:8000/",
+    baseUrl: "https://short-doc.ru/",
   }),
 
   tagTypes: ["fileData"],
 
   endpoints: (build) => ({
-    uploadFile: build.mutation<IFileData, IFileData>({
-      query: (fileData: IFileData) => ({
+    uploadFile: build.mutation<IResponse, FormData>({
+      query: (fileData: FormData) => ({
         url: "/InputFile/",
         method: "POST",
-        body: { ...fileData },
+        body: fileData ,
       }),
+      // providesTags: (result, error, data) => [{ type: 'Data', id: '1' }]
     }),
+
     getResult: build.query<string, void>({
       query: () => ({
         url: "/InputFile/",

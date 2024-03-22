@@ -11,6 +11,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         <Header />
       </header>
       <main className={styles.MainLayout}>{children}</main>
+      <footer className="">Загружая свои документы на этот сайт вы соглашаетесь с нашим Положением о конфиденциальности</footer>
     </ConfigProvider>
   )
 }
